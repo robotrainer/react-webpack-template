@@ -1,25 +1,30 @@
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
-const webpack = require('webpack');
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   mode: "development",
-  
+
   entry: {
-    index: [
-      "webpack-hot-middleware/client?path=/__what&timeout=2000&reload=true",
-      path.resolve(__dirname, "..", "src", "index.jsx")
-    ]
+    index: path.resolve(__dirname, "..", "src", "index.jsx"),
   },
 
-  devtool: "source-map",
+  devtool: "inline-source-map",
+
+  devServer: {
+    static: {
+      directory: path.resolve(__dirname, "..", "dist"),
+    },
+    compress: true,
+    port: 3000,
+    open: true,
+  },
 
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: ["babel-loader"]
+        use: ["babel-loader"],
       },
       {
         test: /\.(scss|css)$/,
@@ -30,11 +35,11 @@ module.exports = {
             options: {
               importLoaders: 2,
               modules: {
-                auto: true,
-                localIdentName: "[name]__[local]___[hash:base64:5]",
+                auto: /\.module\.\w+$/i,
+                localIdentName: "[path][name]__[local]--[hash:base64:5]",
                 exportLocalsConvention: "camelCase",
               },
-            }
+            },
           },
           "postcss-loader",
           "sass-loader",
@@ -56,9 +61,9 @@ module.exports = {
         type: "asset/resource",
         generator: {
           filename: "static/fonts/[name][ext]",
-        }
+        },
       },
-    ]
+    ],
   },
 
   output: {
@@ -74,10 +79,10 @@ module.exports = {
       template: path.resolve(__dirname, "..", "src", "index.html"),
       filename: "index.html",
     }),
-    new webpack.HotModuleReplacementPlugin(),
+    // new webpack.HotModuleReplacementPlugin(),
   ],
 
   resolve: {
     extensions: [".js", ".jsx"],
-  }
+  },
 };
